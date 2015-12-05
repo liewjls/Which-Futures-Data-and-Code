@@ -1,0 +1,61 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf110
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 #This script is the behind the scenes stuff. The work done here gets served to the UI\
+\
+library(shiny) #To create interactive visualizations which may be shared on a server\
+library(ggplot2) #Advanced plotting in R\
+library(scales) #Assist in plot scaling methods\
+library(ggmap) #If we should want to plot our data through the a Google maps API\
+library(dplyr) #General data manipulation\
+library(shinythemes) #Shiny aesthetics\
+\
+#Define the Shiny server\
+\
+server<- function(input, output) \{\
+  \
+  # setting the reactive environment \
+  dataInput <- reactive(\{\
+    subset(ukPrep,\
+           myYears==input$myYears)\
+  \})\
+  \
+  # Plotting a map of the UK\
+  output$myMap <- renderPlot(\{ \
+    \
+    combdat<- merge(z, dataInput(), by= "county")\
+    odat<- combdat[order(combdat$order),]\
+    \
+    ggplot(odat, aes(x=long, y=lat,group=group)) +\
+      geom_polygon(aes(fill=value), colour = alpha("white", 0.2)) + \
+      theme_bw() + scale_fill_continuous(low="blue", high="pink") +\
+      theme(\
+        legend.position = "none",\
+        text = element_blank(), \
+        line = element_blank()) \
+  \})\
+  \
+  output$myCrime <- renderPlot(\{\
+    sDat<- dataInput() %>%\
+      arrange(value)\
+    topCounty<- sDat$county[1]\
+    subDat<- subset(ukPrep, county == topCounty)\
+    ggplot(subDat, aes(x = myYears, y = value)) + geom_point()+\
+      theme_bw() + ggtitle(topCounty)+ theme(legend.position="bottom")+\
+      guides(colour = guide_legend(nrow = 2))+\
+      ylab("Total Population")\
+  \})\
+  \
+  output$myPlot<- renderPlot(\{\
+    ggplot(dataInput(), aes(reorder(county,value),value))+\
+      geom_point(colour = "steelblue", size = 4)+\
+      coord_flip() + theme_bw()\
+  \})\
+\
+\}\
+\
+shinyApp(ui,server)\
+}
