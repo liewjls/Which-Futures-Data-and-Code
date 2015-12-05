@@ -38,5 +38,7 @@ d <- ddply(aggs, .(Year), summarise, ONS.LA.Code = "E06000052/E06000053", ONS.LA
 pop65.85 <- as.data.frame(rbind(pop65.85, d))
 unique(pop65.85$ONS.LA.Name)
 
+head(pop65.85)
+
 setwd("~/DataKind/1_Model")
 write.csv(df, "SRC - CLEAN - ONS Population Projections by Age.csv", row.names = FALSE)
