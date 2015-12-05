@@ -48,7 +48,8 @@ df['Estimated.Self.Funded.Occupancy'] = df['Estimated.Self.Funded.Occupancy']* d
 
 #merge to costs on year and code
 costcare = pd.read_csv(folder+ '//'+ r'STG - Projected LA Cost of Care.csv')
-sys.exit()
+#costcare['"HSCICMaster.HSCIC.Year"'] = costcare['"HSCICMaster.HSCIC.Year"'].apply(lambda x: x[:4]) #assume that start year is relevant year
+#sys.exit()
 df = df.merge(costcare, left_on = ['ONS.LA.Code','Year'] ,right_on = ['"HSCICMaster.ONS.LA.Code"','"HSCICMaster.HSCIC.Year"'])
 
 sys.exit()
