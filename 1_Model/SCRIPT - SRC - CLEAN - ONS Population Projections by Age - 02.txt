@@ -1,0 +1,3 @@
+SELECT Population_Projection.ONSLACode, Population_Projection.ONSLAName, Population_Projection.Year, qry_pop_2014.PopAge6574_2014, Population_Projection.PopAge6574, qry_pop_2014.PopAge75842014 AS PopAge7584_2014, Population_Projection.PopAge7584, qry_pop_2014.PopAge85p_2014l, Population_Projection.PopAge85pl
+FROM Population_Projection INNER JOIN qry_pop_2014 ON Population_Projection.ONSLACode = qry_pop_2014.ONSLACode
+WHERE (((Population_Projection.Year)>2013));
