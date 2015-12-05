@@ -77,7 +77,7 @@ function ready(error, topology, lat_long) {
     .enter()
     .append("svg:text")
     .text(function(d){
-        return d.X;
+        return d.CTYUA14NM;
     })
     .attr("x", function(d){
         return projection([d.X, d.Y])[0];
