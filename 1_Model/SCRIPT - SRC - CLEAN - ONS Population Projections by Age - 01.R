@@ -41,4 +41,4 @@ unique(pop65.85$ONS.LA.Name)
 head(pop65.85)
 
 setwd("~/DataKind/1_Model")
-write.csv(df, "SRC - CLEAN - ONS Population Projections by Age.csv", row.names = FALSE)
+write.csv(pop65.85, "SRC - CLEAN - ONS Population Projections by Age.csv", row.names = FALSE)
