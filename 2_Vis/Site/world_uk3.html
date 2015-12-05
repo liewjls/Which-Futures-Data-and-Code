@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+path {
+  stroke: white;
+  stroke-width: 0.25px;
+  fill: grey;
+}
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="//d3js.org/queue.v1.min.js"></script>
+<script src="http://d3js.org/topojson.v0.min.js"></script>
+<script>
+var width = 960,
+    height = 500;
+
+var projection = d3.geo.mercator()
+    .center([0, 5 ])
+    .scale(1850)
+    .rotate([0,-50]);
+    // .rotate([-180,0]);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var path = d3.geo.path()
+    .projection(projection);
+
+var g = svg.append("g");
+
+function ready(error, topology, lat_long) {
+    if (error){
+        console.log(error);
+    }
+
+    // The country outlines
+    g.selectAll("path")
+      .data(topojson.object(topology, topology.objects.countries)
+          .geometries)
+    .enter()
+      .append("path")
+      .attr("d", path);
+
+    var long_lat = [];
+    var info_lookup = {};
+    lat_long.forEach(function (item) {
+      long_lat.push([item.X, item.Y]);
+      info_lookup[item.X + "," + item.Y] = item;
+    });
+
+    // Good points
+   svg.append("path")
+        // .datum({type: "MultiPoint", coordinates: lat_long})
+        .datum({type: "MultiPoint", coordinates: long_lat})
+        .attr("class", "points")
+        .attr("d", path)
+        .style('fill', 'rgb(247, 150, 29)');
+};
+
+queue()
+    .defer(d3.json, "data/world-110m2.json")
+    .defer(d3.csv, "data/la_point_WGS84_XY.csv")
+    .await(ready);
+
+</script>
+</body>
+</html>
