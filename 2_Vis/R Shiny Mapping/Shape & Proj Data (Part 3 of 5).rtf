@@ -1,0 +1,50 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf110
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 #This script is in bad need of a tidy\
+#This script relies on the ShapeFiles script and the Project Data (Population in this case)\
+\
+#The county ID's are given from 0-325 in the shapefile, we will need this sequence\
+xx<- 0:325\
+\
+#Transform the original dbf file into a data.frame, and give the names the right class, subset England\
+shpStr<-as.data.frame(shpStr)\
+shpStr$dbf.LAD14NM<- as.character(shpStr$dbf.LAD14NM)\
+shpStr<- shpStr[c(1:326),]\
+\
+#To help identify the index number by name\
+t1<- as.data.frame(cbind(xx,shpStr$dbf.LAD14NM))\
+\
+#The original shapefile is not in the same order as above. (Double check work?)\
+t1<- t1[order(t1$V2),]\
+\
+#column names\
+cn<- c("id", "county")\
+colnames(t1)<- cn\
+\
+#To put the names in the correct places, we use the merge function. \
+z<- merge(uk2, t1, by = "id")\
+\
+#Collapse the dataframe into a single vector. We need years in this structure in order to create a  \
+#reactive Shiny map\
+tst1<- as.vector(as.matrix(dataMagg[c(2:15)]))\
+\
+#Get the names, and years and format\
+nmsZ<- rep(dataMagg$Group.1, 14)\
+yrsZ<- rep(2001:2014, 326)\
+yrsZ<- yrsZ[order(yrsZ)]\
+nmsZ<- as.character(nmsZ)\
+\
+#Put it all together, and format the resulting data.frame\
+ukPrep<- as.data.frame(cbind(nmsZ,yrsZ,tst1))\
+cn<- c("county", "myYears", "value")\
+colnames(ukPrep)<- cn\
+ukPrep$county<- as.character(ukPrep$county)\
+ukPrep$value<- as.numeric(as.character(ukPrep$value))\
+z$county<- as.character(z$county)\
+\
+ukPrep[ukPrep$county == "Rother",]\
+}
