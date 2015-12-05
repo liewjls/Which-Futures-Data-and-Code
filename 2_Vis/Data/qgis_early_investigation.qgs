@@ -3,7 +3,7 @@
   <title></title>
   <layer-tree-group expanded="1" checked="Qt::Checked" name="">
     <customproperties/>
-    <layer-tree-layer expanded="1" checked="Qt::Checked" id="la_point_file20151205122112770" name="la_point_file">
+    <layer-tree-layer expanded="1" checked="Qt::Checked" id="la_point_file20151205152923990" name="la_point_file">
       <customproperties/>
     </layer-tree-layer>
     <layer-tree-layer expanded="1" checked="Qt::Checked" id="CTYUA_DEC_2014_EW_BFE20151205122212536" name="CTYUA_DEC_2014_EW_BFE">
@@ -36,6 +36,8 @@
     <layer_coordinate_transform_info>
       <layer_coordinate_transform destAuthId="USER:100000" srcAuthId="USER:100000" srcDatumTransform="-1" destDatumTransform="-1" layerid="CTYUA_DEC_2014_EW_BFE20151205122212536"/>
       <layer_coordinate_transform destAuthId="USER:100000" srcAuthId="USER:100000" srcDatumTransform="-1" destDatumTransform="-1" layerid="CTYUA_DEC_2014_EW_BFE20151205121807898"/>
+      <layer_coordinate_transform destAuthId="USER:100000" srcAuthId="USER:100000" srcDatumTransform="-1" destDatumTransform="-1" layerid="la_point_file20151205152923990"/>
+      <layer_coordinate_transform destAuthId="USER:100000" srcAuthId="USER:100000" srcDatumTransform="-1" destDatumTransform="-1" layerid="la_point_file20151205122517878"/>
       <layer_coordinate_transform destAuthId="USER:100000" srcAuthId="USER:100000" srcDatumTransform="-1" destDatumTransform="-1" layerid="la_point_file20151205122112770"/>
       <layer_coordinate_transform destAuthId="" srcAuthId="" srcDatumTransform="-1" destDatumTransform="-1" layerid="CTYUA_DEC_2014_EW_BFE20151204162115341"/>
     </layer_coordinate_transform_info>
@@ -43,14 +45,14 @@
   <visibility-presets/>
   <layer-tree-canvas>
     <custom-order enabled="0">
-      <item>la_point_file20151205122112770</item>
       <item>CTYUA_DEC_2014_EW_BFE20151205122212536</item>
+      <item>la_point_file20151205152923990</item>
     </custom-order>
   </layer-tree-canvas>
   <legend updateDrawingOrder="true">
     <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="la_point_file" showFeatureCount="0">
       <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="la_point_file20151205122112770" visible="1"/>
+        <legendlayerfile isInOverview="0" layerid="la_point_file20151205152923990" visible="1"/>
       </filegroup>
     </legendlayer>
     <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="CTYUA_DEC_2014_EW_BFE" showFeatureCount="0">
@@ -167,8 +169,8 @@
       </edittypes>
     </maplayer>
     <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
-      <id>la_point_file20151205122112770</id>
-      <datasource>/Volumes/UNTITLED 1/la_point_file.shp</datasource>
+      <id>la_point_file20151205152923990</id>
+      <datasource>./la_point_shapefile/la_point_file.shp</datasource>
       <title></title>
       <abstract></abstract>
       <keywordList>
@@ -216,7 +218,7 @@
           <symbol alpha="1" type="marker" name="0">
             <layer pass="0" class="SimpleMarker" locked="0">
               <prop k="angle" v="0"/>
-              <prop k="color" v="186,175,123,255"/>
+              <prop k="color" v="63,18,176,255"/>
               <prop k="horizontal_anchor_point" v="1"/>
               <prop k="name" v="circle"/>
               <prop k="offset" v="0,0"/>
@@ -313,27 +315,22 @@
     <Digitizing>
       <DefaultSnapToleranceUnit type="int">2</DefaultSnapToleranceUnit>
       <LayerSnappingList type="QStringList">
-        <value>la_point_file20151205122112770</value>
         <value>CTYUA_DEC_2014_EW_BFE20151205122212536</value>
       </LayerSnappingList>
       <LayerSnappingEnabledList type="QStringList">
-        <value>enabled</value>
         <value>enabled</value>
       </LayerSnappingEnabledList>
       <SnappingMode type="QString">current_layer</SnappingMode>
       <AvoidIntersectionsList type="QStringList"/>
       <LayerSnappingToleranceUnitList type="QStringList">
         <value>2</value>
-        <value>2</value>
       </LayerSnappingToleranceUnitList>
       <LayerSnapToList type="QStringList">
-        <value>to_vertex</value>
         <value>to_vertex</value>
       </LayerSnapToList>
       <DefaultSnapType type="QString">off</DefaultSnapType>
       <DefaultSnapTolerance type="double">0</DefaultSnapTolerance>
       <LayerSnappingToleranceList type="QStringList">
-        <value>0.000000</value>
         <value>0.000000</value>
       </LayerSnappingToleranceList>
     </Digitizing>
