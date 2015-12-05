@@ -1,7 +1,7 @@
 library(plyr)
 library(reshape2)
 
-setwd("~/DataKind/2015 DataDive Bristol/1. Raw Data")
+setwd("~/DataKind/1_Model")
 hscic <- read.csv("HSCIC_2014_Pop.csv", check.names = FALSE)
 
 m <- melt(hscic, id = c("ItemBaseID", "TextName", "Primary_Category", "Age_Category", "CompSerTypeCode", "TypeStayCode"), variable = "HSCIC_Region", value.name = "N_Council_Funded_Occupancy")
@@ -34,3 +34,12 @@ write.csv(hscic.mapped, "HSCIC_2014_Occupancy_Mapped.csv")
 hscic.by.age <- ddply(hscic.mapped, .(Age_Category, ONS.LA.Code, ONS.LA.Name), summarise, N_Council_Funded_Occupancy = sum(N_Council_Funded_Occupancy))
 head(hscic.by.age)
 write.csv(hscic.by.age, "HSCIC_2014_Occupancy_Aggregate_By_Age_And_LA.csv")
+
+# Put res and nursing in different columns
+df <- read.csv("SRC - CLEAN - HSCIC LA-Funded Occupancy 2014.csv")
+head(df)
+hscic.by.age <- ddply(df, .(Age_Category, ONS.LA.Code, ONS.LA.Name, CompSerTypeCode), summarise, N_Council_Funded_Occupancy = sum(N_Council_Funded_Occupancy))
+head(hscic.by.age)
+m <- melt(hscic.by.age)
+head(m)
+head(dcast(m, Age_Category + ONS.LA.Code + ONS.LA.Name + variable ~ CompSerTypeCode))
