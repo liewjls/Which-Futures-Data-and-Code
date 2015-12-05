@@ -42,3 +42,11 @@ head(pop65.85)
 
 setwd("~/DataKind/1_Model")
 write.csv(pop65.85, "SRC - CLEAN - ONS Population Projections by Age.csv", row.names = FALSE)
+
+library(ggplot2)
+pop65.85$Year <- as.numeric(as.character(pop65.85$Year))
+d <- ddply(pop65.85, .(Year), summarise, Pop.Age.65.74 = sum(Pop.Age.65.74), Pop.Age.75.84 = sum(Pop.Age.75.84), Pop.Age.85pl = sum(Pop.Age.85pl))
+head(d)
+class(pop65.85$Pop.Age.65.74)
+g <- ggplot(d, aes(x = Year))
+g + geom_line(aes(y = Pop.Age.65.74, colour = "Ages 65-74")) + geom_line(aes(y = Pop.Age.75.84, colour = "Ages 75-84"))+ geom_line(aes(y = Pop.Age.85pl, colour = "Ages 85+"))
