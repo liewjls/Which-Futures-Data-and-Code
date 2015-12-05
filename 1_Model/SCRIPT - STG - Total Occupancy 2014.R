@@ -1,0 +1,6 @@
+library(sqldf)
+path<-paste(getwd(),"/github/Which-Futures-Data-and-Code/1_Model",sep="")
+setwd(path)
+BedCounts<-read.csv("SRC - CLEAN - CQC Bed Counts 2014.csv")
+TotalOcc <- sqldf("SELECT \"ONS.LA.Code\", \"CQC.HSCA.CareHomeBeds.Sum\", (\"CQC.HSCA.CareHomeBeds.Sum\" * .9) AS \"CQC.HSCA.CareHomeBeds.Occ90\", (\"CQC.HSCA.CareHomeBeds.Sum\" * .87) AS \"CQC.HSCA.CareHomeBeds.Occ87\" FROM BedCounts")
+write.csv(TotalOcc,"STG - Total Occupacy 2014.csv")
