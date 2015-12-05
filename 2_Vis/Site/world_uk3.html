@@ -20,8 +20,8 @@ var width = 960,
 
 var projection = d3.geo.mercator()
     .center([0, 5 ])
-    .scale(2250)
-    .rotate([3,-50]);
+    .scale(5000)
+    .rotate([3,-48]);
     // .rotate([-180,0]);
 
 var svg = d3.select("body").append("svg")
@@ -45,10 +45,28 @@ function hoverOut(evt) {
   evt.target.setAttributeNS(null,"fill-opacity","0.4");
 }
 
-function ready(error, topology, lat_long) {
+function ready(error, topology, lat_long, the_data) {
     if (error){
         console.log(error);
     }
+
+    console.log("the_data", the_data);
+    var indexed_data = {};
+    var year_data;
+    var data_column = "Projected.Population.65-74";
+    the_data.forEach(function (row) {
+      var year = row.Year,
+        la_code = row["ONS.LA.Name"];
+      // index by year and la code
+      if (typeof indexed_data[year] === "undefined") {
+        indexed_data[year] = {};
+      }
+      year_data = indexed_data[year];
+      year_data[la_code] = row;
+
+    });
+
+    console.log("indexed_data", indexed_data);
 
     // The country outlines
     g.selectAll("path")
@@ -85,8 +103,8 @@ function ready(error, topology, lat_long) {
     .attr("cx", function (d) { console.log(projection([d.X, d.Y])); return projection([d.X, d.Y])[0]; })
     .attr("cy", function (d) { return projection([d.X, d.Y])[1]; })
     .attr("r", "4px")
-    .attr("fill", "red")
-    .attr("fill-opacity", "0.4")
+    .attr("fill", "green")
+    // .attr("fill-opacity", "0.4")
     .attr("onmouseover", "hoverOver(evt)")
     .attr("onmouseout", "hoverOut(evt)");
 
@@ -106,15 +124,16 @@ function ready(error, topology, lat_long) {
         return projection([d.X, d.Y])[1];
     })
     .attr("text-anchor","middle")
-    .attr('font-size','10pt')
+    .attr('font-size','18pt')
     .attr('font-family', "Verdana")
-    .attr("fill", "rgb(50, 50, 50)")
+    .attr("fill", "rgb(70, 70, 70)")
     .attr('visibility', 'hidden');
 };
 
 queue()
     .defer(d3.json, "data/world-110m2.json")
     .defer(d3.csv, "data/la_point_WGS84_XY.csv")
+    .defer(d3.csv, "data/DUMMY_DATA -- TRG - Projected Occupancy and Costs.csv")
     .await(ready);
 
 </script>
