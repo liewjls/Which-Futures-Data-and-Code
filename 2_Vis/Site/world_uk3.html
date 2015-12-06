@@ -1,56 +1,105 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
-path {
-  stroke: white;
-  stroke-width: 0.25px;
-  fill: grey;
-}
+<head>
+    <meta charset="utf-8">
+    <style>
+    path {
+        stroke: white;
+        stroke-width: 0.25px;
+        fill: grey;
+    }
 
-</style>
+    </style>
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="//d3js.org/queue.v1.min.js"></script>
+    <script src="http://d3js.org/topojson.v0.min.js"></script>
+    <script type="text/javascript" src="js/dataDiveMap.js"></script>
+</head>
+
 <body>
-<form>
-  <input id="year" type="range" min="2015" max="2037" value="2015">
-  <span id="yearVal"></span>
-</form>
-<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="//d3js.org/queue.v1.min.js"></script>
-<script src="http://d3js.org/topojson.v0.min.js"></script>
-<!--<script type="text/javascript" src="js/jquery.svg.js"></script>-->
+    <form>
+      <input id="year" type="range" min="2015" max="2037" value="2015">
+      <span id="yearVal"></span>
+    </form>
+
+
 <script>
 
 var width = 960,
     height = 500;
 
-var colNameLACode = "CTYUA14CD";
+// var data_column = "LA.Cost.Of.Care.65-74.Nursing";
 var data_column = "Projected.Population.65-74";
 
-var projection = d3.geo.mercator()
-    .center([0, 5 ])
-    .scale(5000)
-    .rotate([3,-48]);
-    // .rotate([-180,0]);
+// var projection = d3.geo.mercator()
+//     .center([0, 5 ])
+//     .scale(5000)
+//     .rotate([3,-48]);
+//     // .rotate([-180,0]);
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+// var path = d3.geo.path()
+//     .projection(projection);
 
-var path = d3.geo.path()
-    .projection(projection);
 
-var g = svg.append("g");
+// var svg = d3.select("body").append("svg")
+//     .attr("width", width)
+//     .attr("height", height);
+
+// var g = svg.append("g");
+
+function ready2 (error, topojsonData, localAuthGeoInfo, modelData) {
+    if (error){
+        console.log(error);
+    }
+
+    var svgElem = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    // ToDo: move grouping logic to renderer
+    var svgGrouping = svgElem.append("g");
+
+    $("#yearVal").html($("#year").val());
+
+    var mapRenderer = new dataDiveMap.Renderer(svgElem, svgGrouping, topojsonData, localAuthGeoInfo, modelData);
+    console.log(mapRenderer);
+
+    mapRenderer.render(getCurrentYear());
+
+    $("#year").on("change", function() {
+        var updatedYear = getCurrentYear();
+        // Redraw the map when the year changes
+        // console.log(this.value);
+        // $("#yearVal").html(this.value);
+        console.log("Redrawing");
+        $("#yearVal").html($("#year").val());
+        mapRenderer.render(updatedYear);
+    });
+}
 
 $(document).ready(function () {
-  console.log("READY");
-  $("#year").on("change", function(){
-    console.log(this.value);
-    $("#yearVal").html(this.value);
-  });
+  
+
+  // queue()
+  //     .defer(d3.json, "data/world-110m2.json")
+  //     .defer(d3.csv, "data/la_point_WGS84_XY.csv")
+  //     .defer(d3.csv, "data/DUMMY_DATA -- TRG - Projected Occupancy and Costs.csv")
+  //     .await(ready);
+
+  queue()
+      .defer(d3.json, "data/world-110m2.json")
+      .defer(d3.csv, "data/la_point_WGS84_XY.csv")
+      .defer(d3.csv, "data/DUMMY_DATA -- TRG - Projected Occupancy and Costs.csv")
+      .await(ready2);
+
+  
+
+  
 });
 
-function getYearSliderValue () {
+function getCurrentYear () {
   console.log($("#year").val());
+  return +$("#year").val();
   // document.getElementById("range").innerHTML=newValue;
 }
 
@@ -66,25 +115,19 @@ function hoverOut(evt) {
   evt.target.setAttributeNS(null,"fill-opacity","0.4");
 }
 
-function hexStrToRGBStr (hexValue) {
-  var rgbVal = d3.rgb(hexValue);
-  // console.log("val", rgbVal);
-  return "rgb(" + rgbVal.r + "," + rgbVal.g + "," + rgbVal.b + ")";
-}
-
 var displayYear = "2015";
 
-function extractDataValue(indexed_data, displayYear, laCode) {
-  var row = indexed_data[displayYear][laCode];
-  var val;
-  if (row) {
-    val = +(row[data_column]);
-  } else {
-    val = 0;
-  }
-  // console.log("val", val, laCode, indexed_data[displayYear])
-  return val;
-}
+// function extractDataValue(indexed_data, displayYear, laCode) {
+//   var row = indexed_data[displayYear][laCode];
+//   var val;
+//   if (row) {
+//     val = +(row[data_column]);
+//   } else {
+//     val = 0;
+//   }
+//   // console.log("val", val, laCode, indexed_data[displayYear])
+//   return val;
+// }
 
 function drawDataPoints(svg, colorScale, lat_long, indexed_data) {
   // Good circles
@@ -103,7 +146,7 @@ function drawDataPoints(svg, colorScale, lat_long, indexed_data) {
         val = extractDataValue(indexed_data, displayYear, laCode);
       
       // console.log("rgbVal", val, d)
-      return hexStrToRGBStr(colorScale(val));
+      return dataDiveMap.colours.hexStrToRGBStr(colorScale(val));
     })
     // hexStrToRGBStr(colorScale(1200))
     // .attr("fill-opacity", "0.4")
@@ -161,7 +204,7 @@ function ready(error, topology, lat_long, the_data) {
     // console.log(colorScale(1200));
     // console.log(d3.rgb(colorScale(1200)));
     // console.log(hexStrToRGBStr("#ff0000"));
-    console.log(hexStrToRGBStr(colorScale(1200)));
+    // console.log(hexStrToRGBStr(colorScale(1200)));
     console.log("indexed_data", indexed_data);
 
     // The country outlines
@@ -240,11 +283,7 @@ function ready(error, topology, lat_long, the_data) {
   */
 };
 
-queue()
-    .defer(d3.json, "data/world-110m2.json")
-    .defer(d3.csv, "data/la_point_WGS84_XY.csv")
-    .defer(d3.csv, "data/DUMMY_DATA -- TRG - Projected Occupancy and Costs.csv")
-    .await(ready);
+
 
 </script>
 </body>
