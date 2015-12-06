@@ -18,9 +18,10 @@
 
 <body>
     <form>
-      <input id="year" type="range" min="2015" max="2037" value="2015">
+      <input id="year" type="range" min="2014" max="2036" value="2014">
       <span id="yearVal"></span>
     </form>
+    <button id="play">Play</button>
 
 
 <script>
@@ -28,8 +29,12 @@
 var width = 960,
     height = 500;
 
+var minYear = 2014;
+var maxYear = 2036;
+
 // var data_column = "LA.Cost.Of.Care.65-74.Nursing";
-var data_column = "Projected.Population.65-74";
+// var data_column = "Projected.Population.65-74";
+// var data_column1 = "LA.Funded.Occupancy.65-74_Nursing";
 
 // var projection = d3.geo.mercator()
 //     .center([0, 5 ])
@@ -46,6 +51,36 @@ var data_column = "Projected.Population.65-74";
 //     .attr("height", height);
 
 // var g = svg.append("g");
+var tmpDataColumn = "LA.Funded.Occupancy.65-74_Nursing";
+
+function updateMap (mapRenderer) {
+    // Redraws the map
+    var updatedYear = getCurrentYear(),
+        dataColumn = tmpDataColumn;
+    
+    // console.log(this.value);
+    // $("#yearVal").html(this.value);
+    console.log("Redrawing");
+    $("#yearVal").html($("#year").val());
+    mapRenderer.render(updatedYear, dataColumn);
+}
+
+function changeYear (updatedYear) {
+    // Change the date in the interface
+    $("#year").val(updatedYear);
+    $("#yearVal").html(updatedYear);
+}
+
+function incrementYear (mapRenderer) {
+    // Go to next year and redraw map
+    var currentYear = getCurrentYear()
+      nextYear = currentYear + 1;
+    if (nextYear === maxYear) {
+        nextYear = minYear;
+    }
+    changeYear(nextYear);
+    updateMap(mapRenderer);
+}
 
 function ready2 (error, topojsonData, localAuthGeoInfo, modelData) {
     if (error){
@@ -64,16 +99,20 @@ function ready2 (error, topojsonData, localAuthGeoInfo, modelData) {
     var mapRenderer = new dataDiveMap.Renderer(svgElem, svgGrouping, topojsonData, localAuthGeoInfo, modelData);
     console.log(mapRenderer);
 
-    mapRenderer.render(getCurrentYear());
+    var year = getCurrentYear();
+        dataColumn = tmpDataColumn;
+
+    mapRenderer.render(year, dataColumn);
 
     $("#year").on("change", function() {
-        var updatedYear = getCurrentYear();
         // Redraw the map when the year changes
-        // console.log(this.value);
-        // $("#yearVal").html(this.value);
-        console.log("Redrawing");
-        $("#yearVal").html($("#year").val());
-        mapRenderer.render(updatedYear);
+        updateMap(mapRenderer);
+    });
+
+    $("#play").on("click", function() {
+        // Redraw the map when the year changes
+        // updateMap(mapRenderer);
+        setInterval(incrementYear, 200, mapRenderer);
     });
 }
 
@@ -89,12 +128,9 @@ $(document).ready(function () {
   queue()
       .defer(d3.json, "data/world-110m2.json")
       .defer(d3.csv, "data/la_point_WGS84_XY.csv")
-      .defer(d3.csv, "data/DUMMY_DATA -- TRG - Projected Occupancy and Costs.csv")
+      // .defer(d3.csv, "data/DUMMY_DATA -- TRG - Projected Occupancy and Costs.csv")
+      .defer(d3.csv, "data/target.csv")
       .await(ready2);
-
-  
-
-  
 });
 
 function getCurrentYear () {
@@ -115,173 +151,173 @@ function hoverOut(evt) {
   evt.target.setAttributeNS(null,"fill-opacity","0.4");
 }
 
-var displayYear = "2015";
+// var displayYear = "2015";
 
-// function extractDataValue(indexed_data, displayYear, laCode) {
-//   var row = indexed_data[displayYear][laCode];
-//   var val;
-//   if (row) {
-//     val = +(row[data_column]);
-//   } else {
-//     val = 0;
-//   }
-//   // console.log("val", val, laCode, indexed_data[displayYear])
-//   return val;
+// // function extractDataValue(indexed_data, displayYear, laCode) {
+// //   var row = indexed_data[displayYear][laCode];
+// //   var val;
+// //   if (row) {
+// //     val = +(row[data_column]);
+// //   } else {
+// //     val = 0;
+// //   }
+// //   // console.log("val", val, laCode, indexed_data[displayYear])
+// //   return val;
+// // }
+
+// function drawDataPoints(svg, colorScale, lat_long, indexed_data) {
+//   // Good circles
+//    svg.selectAll("circle")
+//     .data(lat_long).enter()
+//     .append("circle")
+//     .attr("data-id", function (d) { return d.X; })
+//     .attr("cx", function (d) { return projection([d.X, d.Y])[0]; })
+//     // .attr("cx", function (d) { console.log(projection([d.X, d.Y])); return projection([d.X, d.Y])[0]; })
+//     .attr("cy", function (d) { return projection([d.X, d.Y])[1]; })
+//     .attr("r", "4px")
+//     // .attr("fill", "green")
+//     .attr("fill", function (d) {
+//       // var val = +d[data_column];
+//       var laCode = d[colNameLACode],
+//         val = extractDataValue(indexed_data, displayYear, laCode);
+      
+//       // console.log("rgbVal", val, d)
+//       return dataDiveMap.colours.hexStrToRGBStr(colorScale(val));
+//     })
+//     // hexStrToRGBStr(colorScale(1200))
+//     // .attr("fill-opacity", "0.4")
+//     .attr("onmouseover", "hoverOver(evt)")
+//     .attr("onmouseout", "hoverOut(evt)");
+
+//   // Text
+//   svg.selectAll("text")
+//     .data(lat_long)
+//     .enter()
+//     .append("svg:text")
+//     .attr("data-id", function (d) { return d.X; })
+//     .text(function(d){
+//         return d.CTYUA14NM;
+//     })
+//     .attr("x", function(d){
+//         return projection([d.X, d.Y])[0];
+//     })
+//     .attr("y", function(d){
+//         return projection([d.X, d.Y])[1];
+//     })
+//     .attr("text-anchor","middle")
+//     .attr('font-size','18pt')
+//     .attr('font-family', "Verdana")
+//     .attr("fill", "rgb(70, 70, 70)")
+//     .attr('visibility', 'hidden');
 // }
 
-function drawDataPoints(svg, colorScale, lat_long, indexed_data) {
-  // Good circles
-   svg.selectAll("circle")
-    .data(lat_long).enter()
-    .append("circle")
-    .attr("data-id", function (d) { return d.X; })
-    .attr("cx", function (d) { return projection([d.X, d.Y])[0]; })
-    // .attr("cx", function (d) { console.log(projection([d.X, d.Y])); return projection([d.X, d.Y])[0]; })
-    .attr("cy", function (d) { return projection([d.X, d.Y])[1]; })
-    .attr("r", "4px")
-    // .attr("fill", "green")
-    .attr("fill", function (d) {
-      // var val = +d[data_column];
-      var laCode = d[colNameLACode],
-        val = extractDataValue(indexed_data, displayYear, laCode);
-      
-      // console.log("rgbVal", val, d)
-      return dataDiveMap.colours.hexStrToRGBStr(colorScale(val));
-    })
-    // hexStrToRGBStr(colorScale(1200))
-    // .attr("fill-opacity", "0.4")
-    .attr("onmouseover", "hoverOver(evt)")
-    .attr("onmouseout", "hoverOut(evt)");
+// function ready(error, topology, lat_long, the_data) {
+//     if (error){
+//         console.log(error);
+//     }
 
-  // Text
-  svg.selectAll("text")
-    .data(lat_long)
-    .enter()
-    .append("svg:text")
-    .attr("data-id", function (d) { return d.X; })
-    .text(function(d){
-        return d.CTYUA14NM;
-    })
-    .attr("x", function(d){
-        return projection([d.X, d.Y])[0];
-    })
-    .attr("y", function(d){
-        return projection([d.X, d.Y])[1];
-    })
-    .attr("text-anchor","middle")
-    .attr('font-size','18pt')
-    .attr('font-family', "Verdana")
-    .attr("fill", "rgb(70, 70, 70)")
-    .attr('visibility', 'hidden');
-}
-
-function ready(error, topology, lat_long, the_data) {
-    if (error){
-        console.log(error);
-    }
-
-    // console.log("the_data", the_data);
-    var indexed_data = {};
-    var year_data;
+//     // console.log("the_data", the_data);
+//     var indexed_data = {};
+//     var year_data;
     
     
-    the_data.forEach(function (row) {
-      var year = row.Year,
-        la_code = row["ONS.LA.Code"];
-      // index by year and la code
-      if (typeof indexed_data[year] === "undefined") {
-        indexed_data[year] = {};
-      }
-      year_data = indexed_data[year];
-      year_data[la_code] = row;
+//     the_data.forEach(function (row) {
+//       var year = row.Year,
+//         la_code = row["ONS.LA.Code"];
+//       // index by year and la code
+//       if (typeof indexed_data[year] === "undefined") {
+//         indexed_data[year] = {};
+//       }
+//       year_data = indexed_data[year];
+//       year_data[la_code] = row;
 
-    });
+//     });
 
-    // Set up a d3 scale
-    var colorScale = d3.scale.linear()
-      .domain([0, 50])
-      .range(["red", "green"]);
-    // console.log(colorScale(1200));
-    // console.log(d3.rgb(colorScale(1200)));
-    // console.log(hexStrToRGBStr("#ff0000"));
-    // console.log(hexStrToRGBStr(colorScale(1200)));
-    console.log("indexed_data", indexed_data);
+//     // Set up a d3 scale
+//     var colorScale = d3.scale.linear()
+//       .domain([0, 50])
+//       .range(["red", "green"]);
+//     // console.log(colorScale(1200));
+//     // console.log(d3.rgb(colorScale(1200)));
+//     // console.log(hexStrToRGBStr("#ff0000"));
+//     // console.log(hexStrToRGBStr(colorScale(1200)));
+//     console.log("indexed_data", indexed_data);
 
-    // The country outlines
-    g.selectAll("path")
-      .data(topojson.object(topology, topology.objects.countries)
-          .geometries)
-    .enter()
-      .append("path")
-      .attr("d", path);
+//     // The country outlines
+//     g.selectAll("path")
+//       .data(topojson.object(topology, topology.objects.countries)
+//           .geometries)
+//     .enter()
+//       .append("path")
+//       .attr("d", path);
 
-    drawDataPoints(svg, colorScale, lat_long, indexed_data);
+//     drawDataPoints(svg, colorScale, lat_long, indexed_data);
 
-    // var long_lat = [];
-    // var info_lookup = {};
-    // lat_long.forEach(function (item) {
-    //   long_lat.push([item.X, item.Y]);
-    //   info_lookup[item.X + "," + item.Y] = item;
-    //   // console.log(projection([item.Y, item.X]));
-    //   console.log([+item.Y, +item.X]);
-    // });
+//     // var long_lat = [];
+//     // var info_lookup = {};
+//     // lat_long.forEach(function (item) {
+//     //   long_lat.push([item.X, item.Y]);
+//     //   info_lookup[item.X + "," + item.Y] = item;
+//     //   // console.log(projection([item.Y, item.X]));
+//     //   console.log([+item.Y, +item.X]);
+//     // });
 
-    // Good points
-   // svg.append("path")
-   //      // .datum({type: "MultiPoint", coordinates: lat_long})
-   //      .datum({type: "MultiPoint", coordinates: long_lat})
-   //      .attr("class", "points")
-   //      .attr("d", path)
-   //      .style('fill', 'rgb(247, 150, 29)');
+//     // Good points
+//    // svg.append("path")
+//    //      // .datum({type: "MultiPoint", coordinates: lat_long})
+//    //      .datum({type: "MultiPoint", coordinates: long_lat})
+//    //      .attr("class", "points")
+//    //      .attr("d", path)
+//    //      .style('fill', 'rgb(247, 150, 29)');
 
-   // console.log(lat_long);
+//    // console.log(lat_long);
 
-   /*
-   // Good circles
-   svg.selectAll("circle")
-    .data(lat_long).enter()
-    .append("circle")
-    .attr("data-id", function (d) { return d.X; })
-    .attr("cx", function (d) { return projection([d.X, d.Y])[0]; })
-    // .attr("cx", function (d) { console.log(projection([d.X, d.Y])); return projection([d.X, d.Y])[0]; })
-    .attr("cy", function (d) { return projection([d.X, d.Y])[1]; })
-    .attr("r", "4px")
-    // .attr("fill", "green")
-    .attr("fill", function (d) {
-      // var val = +d[data_column];
-      var laCode = d[colNameLACode],
-        val = extractDataValue(indexed_data, displayYear, laCode);
+//    /*
+//    // Good circles
+//    svg.selectAll("circle")
+//     .data(lat_long).enter()
+//     .append("circle")
+//     .attr("data-id", function (d) { return d.X; })
+//     .attr("cx", function (d) { return projection([d.X, d.Y])[0]; })
+//     // .attr("cx", function (d) { console.log(projection([d.X, d.Y])); return projection([d.X, d.Y])[0]; })
+//     .attr("cy", function (d) { return projection([d.X, d.Y])[1]; })
+//     .attr("r", "4px")
+//     // .attr("fill", "green")
+//     .attr("fill", function (d) {
+//       // var val = +d[data_column];
+//       var laCode = d[colNameLACode],
+//         val = extractDataValue(indexed_data, displayYear, laCode);
       
-      // console.log("rgbVal", val, d)
-      return hexStrToRGBStr(colorScale(val));
-    })
-    // hexStrToRGBStr(colorScale(1200))
-    // .attr("fill-opacity", "0.4")
-    .attr("onmouseover", "hoverOver(evt)")
-    .attr("onmouseout", "hoverOut(evt)");
+//       // console.log("rgbVal", val, d)
+//       return hexStrToRGBStr(colorScale(val));
+//     })
+//     // hexStrToRGBStr(colorScale(1200))
+//     // .attr("fill-opacity", "0.4")
+//     .attr("onmouseover", "hoverOver(evt)")
+//     .attr("onmouseout", "hoverOut(evt)");
 
-  // Text
-  svg.selectAll("text")
-    .data(lat_long)
-    .enter()
-    .append("svg:text")
-    .attr("data-id", function (d) { return d.X; })
-    .text(function(d){
-        return d.CTYUA14NM;
-    })
-    .attr("x", function(d){
-        return projection([d.X, d.Y])[0];
-    })
-    .attr("y", function(d){
-        return projection([d.X, d.Y])[1];
-    })
-    .attr("text-anchor","middle")
-    .attr('font-size','18pt')
-    .attr('font-family', "Verdana")
-    .attr("fill", "rgb(70, 70, 70)")
-    .attr('visibility', 'hidden');
-  */
-};
+//   // Text
+//   svg.selectAll("text")
+//     .data(lat_long)
+//     .enter()
+//     .append("svg:text")
+//     .attr("data-id", function (d) { return d.X; })
+//     .text(function(d){
+//         return d.CTYUA14NM;
+//     })
+//     .attr("x", function(d){
+//         return projection([d.X, d.Y])[0];
+//     })
+//     .attr("y", function(d){
+//         return projection([d.X, d.Y])[1];
+//     })
+//     .attr("text-anchor","middle")
+//     .attr('font-size','18pt')
+//     .attr('font-family', "Verdana")
+//     .attr("fill", "rgb(70, 70, 70)")
+//     .attr('visibility', 'hidden');
+//   */
+// };
 
 
 

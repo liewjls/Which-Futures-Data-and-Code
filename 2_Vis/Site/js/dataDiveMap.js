@@ -58,20 +58,20 @@ dataDiveMap.Renderer = (function ($, d3, topojson) {
                     .append("path")
                     .attr("d", path);
         },
-        _extractDataValue = function(indexedData, displayYear, localAuthCode) {
-            console.log("extracting data", displayYear, localAuthCode)
+        _extractDataValue = function(indexedData, displayYear, localAuthCode, dataColumn) {
+            // console.log("extracting data", displayYear, localAuthCode)
             var row = indexedData[displayYear][localAuthCode];
             var val;
             if (row) {
-                val = +(row[data_column]);
+                val = +(row[dataColumn]);
             } else {
                 val = 0;
             }
             // console.log("val", val, laCode, indexed_data[displayYear])
             return val;
         },
-        _drawDataPoints = function  (svg, projection, colorScale, lat_long, indexed_data, displayYear) {
-            console.log("drawing points", displayYear)
+        _drawDataPoints = function  (svg, projection, colorScale, lat_long, indexed_data, displayYear, dataColumn) {
+            // console.log("drawing points", displayYear)
             // Clear old points
             svg.selectAll("circle").remove();
             svg.selectAll("text").remove();
@@ -87,7 +87,7 @@ dataDiveMap.Renderer = (function ($, d3, topojson) {
                 .attr("r", "4px")
                 .attr("fill", function (d) {
                     var laCode = d[colNameGeoLocalAuth],
-                    val = _extractDataValue(indexed_data, displayYear, laCode);
+                    val = _extractDataValue(indexed_data, displayYear, laCode, dataColumn);
                     return dataDiveMap.colours.hexStrToRGBStr(colorScale(val));
                 })
                 .attr("onmouseover", "hoverOver(evt)")
@@ -101,7 +101,7 @@ dataDiveMap.Renderer = (function ($, d3, topojson) {
                     .attr("data-id", function (d) { return d.X; })
                     .text(function(d){
                         var laCode = d[colNameGeoLocalAuth],
-                        val = _extractDataValue(indexed_data, displayYear, laCode);
+                        val = _extractDataValue(indexed_data, displayYear, laCode, dataColumn);
                         return d.CTYUA14NM + ":" + val;
                     })
                     .attr("x", function(d){
@@ -121,12 +121,9 @@ dataDiveMap.Renderer = (function ($, d3, topojson) {
         return this.colorScale;
     };
 
-    renderer.prototype.render = function (year) {
-        
-        // console.log("year", year);
-
+    renderer.prototype.render = function (year, dataColumn) {
         _drawCountryOutline(this.svgGrouping, this.path, this.topojsonData);
-        _drawDataPoints(this.svg, this.projection, this.colorScale, this.localAuthGeoInfo, this._indexedData, year);
+        _drawDataPoints(this.svg, this.projection, this.colorScale, this.localAuthGeoInfo, this._indexedData, year, dataColumn);
     };
 
     return renderer;
